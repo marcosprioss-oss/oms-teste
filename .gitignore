@@ -1,0 +1,67 @@
+# =========================
+# Global / OS
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.class
+
+# =========================
+# Backend (Java / Maven / Spring Boot)
+# =========================
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/.mvn/wrapper/maven-wrapper.properties
+backend/.classpath
+backend/.project
+backend/.settings/
+
+# Logs
+backend/*.log
+backend/logs/
+backend/*.out
+
+# =========================
+# Frontend (Node / React / Vue / Angular)
+# =========================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.parcel-cache/
+frontend/.nuxt/
+frontend/.next/
+frontend/out/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.local
+.env.*.local
+backend/src/main/resources/application-*.yml
+backend/src/main/resources/application-*.properties
+
+# =========================
+# Docker / Compose
+# =========================
+*.pid
+docker-compose.override.yml
+
+# =========================
+# Coverage / Reports
+# =========================
+coverage/
+frontend/coverage/
+backend/coverage/
+*.lcov
