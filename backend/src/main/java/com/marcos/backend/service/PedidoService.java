@@ -5,6 +5,8 @@ import com.marcos.backend.entity.Produto;
 import com.marcos.backend.entity.StatusPedido;
 import com.marcos.backend.repository.PedidoRepository;
 import com.marcos.backend.repository.ProdutoRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +33,11 @@ public class PedidoService {
 		return pedidoRepository.save(pedido);
 	}
 
+	@Cacheable(value = "pedidos")
 	public List<Pedido> listPedidos() { return pedidoRepository.findAll(); }
+
+	@CacheEvict(value = "pedidos", allEntries = true)
+	public void invalidateCache(){}
 
 	public Optional<Pedido> getPedido(Integer id){ return pedidoRepository.findById(id); }
 
