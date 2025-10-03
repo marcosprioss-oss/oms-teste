@@ -12,5 +12,5 @@ import java.util.List;
 public interface PedidoRepository extends JpaRepository<Pedido,Integer> {
 	List<Pedido> findByStatus(StatusPedido status);
 	Page<Pedido> findByStatus(Pedido status, Pageable pageable);
-	List<Pedido> findByCreatedAtBetween(LocalDateTime from, LocalDateTime to);
+	List<Pedido> findByCriacaoBetween(LocalDateTime from, LocalDateTime to);
 }
