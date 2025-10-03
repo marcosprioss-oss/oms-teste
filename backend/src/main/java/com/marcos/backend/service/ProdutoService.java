@@ -1,4 +1,4 @@
-package com.marcos.backend.services;
+package com.marcos.backend.service;
 
 import com.marcos.backend.entity.Produto;
 import com.marcos.backend.repository.ProdutoRepository;
@@ -26,5 +26,13 @@ public class ProdutoService {
 	public void invalidateCache(){}
 
 	public Produto findById(Integer id){ return produtoRepository.findById(id).orElse(null); }
+
+	@CacheEvict(value = "produtos", allEntries = true)
+	public Produto atualizar(Produto produto) {
+		if (!produtoRepository.existsById(produto.getId())) {
+			throw new RuntimeException("Produto não encontrado");
+		}
+		return produtoRepository.save(produto);
+	}
 
 }
