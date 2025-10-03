@@ -27,11 +27,11 @@ public class ProdutoService {
 
 	public Produto findById(Integer id){ return produtoRepository.findById(id).orElse(null); }
 
-	@CacheEvict(value = "produtos", allEntries = true)
 	public Produto atualizar(Produto produto) {
 		if (!produtoRepository.existsById(produto.getId())) {
 			throw new RuntimeException("Produto não encontrado");
 		}
+		invalidateCache();
 		return produtoRepository.save(produto);
 	}
 
