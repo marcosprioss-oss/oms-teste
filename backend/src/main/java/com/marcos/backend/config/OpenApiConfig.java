@@ -17,7 +17,7 @@ public class OpenApiConfig {
 
 	@Bean
 	public GroupedOpenApi publicApi() {
-		return GroupedOpenApi.builder().group("public-api").pathsToMatch("/api/public/**").build();
+		return GroupedOpenApi.builder().group("public-api").pathsToMatch("/**").build();
 	}
 
 }
