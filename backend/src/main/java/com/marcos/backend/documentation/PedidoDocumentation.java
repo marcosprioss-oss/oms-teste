@@ -1,5 +1,6 @@
 package com.marcos.backend.documentation;
 
+import com.marcos.backend.entity.Pedido;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -7,26 +8,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "Pedidos", description = "Documentação relacionada a Pedidos")
-@RequestMapping("/pedidos")
 public interface PedidoDocumentation {
 
 	@Operation(summary = "Lista todos os pedidos")
-	@GetMapping
-	List<Object> listarPedidos();
+	List<Pedido> listarPedidos();
 
 	@Operation(summary = "Busca um pedido por ID")
-	@GetMapping("/{id}")
-	Object buscarPedido(@PathVariable Long id);
+	Pedido buscarPedido(Long id);
 
 	@Operation(summary = "Cria um novo pedido")
-	@PostMapping
-	Object criarPedido(@RequestBody Object pedido);
+	Pedido criarPedido(Pedido pedido);
 
 	@Operation(summary = "Atualiza um pedido existente")
-	@PutMapping("/{id}")
-	Object atualizarPedido(@PathVariable Long id, @RequestBody Object pedido);
+	Pedido atualizarPedido(Long id,Pedido pedido);
 
 	@Operation(summary = "Cancela um pedido")
-	@DeleteMapping("/{id}")
-	void cancelaPedido(@PathVariable Long id);
+	void cancelaPedido(Long id);
 }
