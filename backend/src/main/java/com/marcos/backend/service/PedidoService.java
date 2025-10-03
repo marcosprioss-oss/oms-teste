@@ -1,4 +1,4 @@
-package com.marcos.backend.services;
+package com.marcos.backend.service;
 
 import com.marcos.backend.entity.Pedido;
 import com.marcos.backend.entity.Produto;
