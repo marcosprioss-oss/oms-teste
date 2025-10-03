@@ -1,19 +1,13 @@
 package com.marcos.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name="pedidos")
 public class Pedido {
 
@@ -38,4 +32,35 @@ public class Pedido {
 		if (status == null) status = StatusPedido.Pendente;
 	}
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public LocalDateTime getCriacao() {
+		return criacao;
+	}
+
+	public void setCriacao(LocalDateTime criacao) {
+		this.criacao = criacao;
+	}
+
+	public StatusPedido getStatus() {
+		return status;
+	}
+
+	public void setStatus(StatusPedido status) {
+		this.status = status;
+	}
+
+	public List<ItemPedido> getItems() {
+		return items;
+	}
+
+	public void setItems(List<ItemPedido> items) {
+		this.items = items;
+	}
 }

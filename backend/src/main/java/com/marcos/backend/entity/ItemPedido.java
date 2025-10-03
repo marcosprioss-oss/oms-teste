@@ -1,24 +1,51 @@
 package com.marcos.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+
 @Entity
-@Table(name = "item_pedido")
 public class ItemPedido {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@ManyToOne
-	@JoinColumn(name = "produto_id")
+	@ManyToOne(optional = false)
 	private Produto produto;
 
 	private Integer quantidade;
 
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Produto getProduto() {
+		return produto;
+	}
+
+	public void setProduto(Produto produto) {
+		this.produto = produto;
+	}
+
+	public Integer getQuantidade() {
+		return quantidade;
+	}
+
+	public void setQuantidade(Integer quantidade) {
+		this.quantidade = quantidade;
+	}
+
+	public ItemPedido() {
+	}
+
+	public ItemPedido(Integer id, Produto produto, Integer quantidade) {
+		this.id         = id;
+		this.produto    = produto;
+		this.quantidade = quantidade;
+	}
 }
