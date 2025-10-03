@@ -1,7 +1,8 @@
-version: '3.8'
+version: '3.9'
+
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -14,4 +15,22 @@ services:
   redis:
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - "6380:6380"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+        DB_HOST: postgres
+        DB_PORT: 5432
+        DB_NAME: pedidos
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+
+volumes:
+  pgdata:
