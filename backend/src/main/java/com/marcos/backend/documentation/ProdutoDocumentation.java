@@ -4,28 +4,24 @@ import com.marcos.backend.entity.Produto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Tag(name = "Produtos", description = "Documentação relacionada a Produtos")
-@RequestMapping("/produtos")
 public interface ProdutoDocumentation {
 
 	@Operation(summary = "Listar todos os produtos")
-	@GetMapping
-	List<Produto> listAll();
+	public abstract List<Produto> listAll();
 
 	@Operation(summary = "Buscar produto por ID")
-	@GetMapping("/{id}")
-	Produto findById(@PathVariable Integer id);
+	public abstract Produto findById(Integer id);
 
 	@Operation(summary = "Cria um novo produto")
-	@PostMapping
-	Produto criarProduto(@RequestBody Produto produto);
+	public abstract Produto criarProduto(Produto produto);
 
 	@Operation(summary = "Atualiza um produto existente")
-	@PutMapping("/{id}")
-	Produto atualizarProduto(@PathVariable Integer id, @RequestBody Produto produto);
+	public abstract Produto atualizarProduto(Integer id, Produto produto);
 
 }
