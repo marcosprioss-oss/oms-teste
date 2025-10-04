@@ -1,9 +1,10 @@
 package com.marcos.backend.documentation;
 
 import com.marcos.backend.entity.Pedido;
+import com.marcos.backend.entity.StatusPedido;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -14,14 +15,14 @@ public interface PedidoDocumentation {
 	List<Pedido> listarPedidos();
 
 	@Operation(summary = "Busca um pedido por ID")
-	Pedido buscarPedido(Long id);
+	Pedido buscarPedido(Integer id);
 
 	@Operation(summary = "Cria um novo pedido")
 	Pedido criarPedido(Pedido pedido);
 
-	@Operation(summary = "Atualiza um pedido existente")
-	Pedido atualizarPedido(Long id,Pedido pedido);
-
 	@Operation(summary = "Cancela um pedido")
-	void cancelaPedido(Long id);
+	ResponseEntity<Object> cancelaPedido(Integer id);
+
+	@Operation(summary = "Altera o status de um pedido")
+	Pedido alteraStatus(Integer id, StatusPedido status);
 }
