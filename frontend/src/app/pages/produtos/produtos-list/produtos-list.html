@@ -1,0 +1,74 @@
+<div class="produtos-container">
+    <div class="header">
+        <h1>Gerenciamento de Produtos</h1>
+        <div class="actions">
+            <div class="search-box">
+                <input type="text" placeholder="Buscar produtos..." [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
+                    class="search-input">
+                <button (click)="onSearch()" class="search-btn">Buscar</button>
+            </div>
+            <a routerLink="/novo-produto" class="btn-primary">
+                <i class="icon-plus"></i>
+                Novo Produto
+            </a>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="produtos-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Preço</th>
+                    <th>Estoque</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let produto of produtos()">
+                    <td>{{ produto.id }}</td>
+                    <td>{{ produto.nome }}</td>
+                    <td>{{ produto.descricao }}</td>
+                    <td>{{ produto.preco | currency:'BRL':'symbol':'1.2-2' }}</td>
+                    <td>
+                        <span [class]="produto.quantidadeEstoque > 0 ? 'stock-available' : 'stock-unavailable'">
+                            {{ produto.quantidadeEstoque }}
+                        </span>
+                    </td>
+                    <td class="actions-cell">
+                        <button (click)="excluirProduto(produto.id!)" class="btn-danger btn-sm" title="Excluir">
+                            <i class="icon-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="produtos().length === 0">
+                    <td colspan="6" class="no-data">
+                        Nenhum produto encontrado
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" *ngIf="totalPages() > 1">
+        <button (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0" class="btn-pagination">
+            Anterior
+        </button>
+
+        <span *ngFor="let page of getPages()" (click)="onPageChange(page)"
+            [class]="page === currentPage() ? 'page-number active' : 'page-number'">
+            {{ page + 1 }}
+        </span>
+
+        <button (click)="onPageChange(currentPage() + 1)" [disabled]="currentPage() === totalPages() - 1"
+            class="btn-pagination">
+            Próximo
+        </button>
+    </div>
+
+    <div class="pagination-info">
+        Mostrando {{ produtos().length }} de {{ totalElements() }} produtos
+    </div>
+</div>

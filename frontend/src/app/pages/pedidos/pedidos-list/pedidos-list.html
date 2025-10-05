@@ -1,0 +1,113 @@
+<div class="pedidos-container">
+    <div class="header">
+        <h1>Gerenciamento de Pedidos</h1>
+        <div class="actions">
+            <a routerLink="/novo-pedido" class="btn-primary">
+                <i class="icon-plus"></i>
+                Novo Pedido
+            </a>
+        </div>
+    </div>
+
+    <!-- Dashboard de Estatísticas -->
+    <div class="dashboard">
+        <div class="stats-grid">
+            <div class="stat-card" *ngFor="let stat of estatisticas() | keyvalue">
+                <div class="stat-value">{{ stat.value }}</div>
+                <div class="stat-label">{{ stat.key }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters">
+        <div class="filter-group">
+            <label for="status">Status:</label>
+            <select id="status" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()" class="filter-select">
+                <option *ngFor="let option of getStatusOptions()" [value]="option.value">
+                    {{ option.label }}
+                </option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="dataInicio">Data Início:</label>
+            <input type="date" id="dataInicio" [(ngModel)]="dataInicio" (ngModelChange)="onFilterChange()"
+                class="filter-input">
+        </div>
+
+        <div class="filter-group">
+            <label for="dataFim">Data Fim:</label>
+            <input type="date" id="dataFim" [(ngModel)]="dataFim" (ngModelChange)="onFilterChange()"
+                class="filter-input">
+        </div>
+
+        <button (click)="limparFiltros()" class="btn-secondary">
+            Limpar Filtros
+        </button>
+    </div>
+
+    <!-- Tabela de Pedidos -->
+    <div class="table-container">
+        <table class="pedidos-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Número</th>
+                    <th>Status</th>
+                    <th>Data Criação</th>
+                    <th>Valor Total</th>
+                    <th>Itens</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let pedido of pedidos()">
+                    <td>{{ pedido.id }}</td>
+                    <td>{{ pedido.numero || 'N/A' }}</td>
+                    <td>
+                        <app-status-badge [status]="pedido.status"></app-status-badge>
+                    </td>
+                    <td>{{ pedido.dataCriacao | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>{{ pedido.valorTotal | currency:'BRL':'symbol':'1.2-2' }}</td>
+                    <td>{{ pedido.itens.length }} item(s)</td>
+                    <td class="actions-cell">
+                        <a [routerLink]="['/pedidos', pedido.id]" class="btn-info btn-sm" title="Ver Detalhes">
+                            <i class="icon-eye"></i>
+                        </a>
+                        <button *ngIf="podeCancelar(pedido.status)" (click)="cancelarPedido(pedido.id!)"
+                            class="btn-danger btn-sm" title="Cancelar">
+                            <i class="icon-cancel"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="pedidos().length === 0">
+                    <td colspan="7" class="no-data">
+                        Nenhum pedido encontrado
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginação -->
+    <div class="pagination" *ngIf="totalPages() > 1">
+        <button (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0" class="btn-pagination">
+            Anterior
+        </button>
+
+        <span *ngFor="let page of getPages()" (click)="onPageChange(page)"
+            [class]="page === currentPage() ? 'page-number active' : 'page-number'">
+            {{ page + 1 }}
+        </span>
+
+        <button (click)="onPageChange(currentPage() + 1)" [disabled]="currentPage() === totalPages() - 1"
+            class="btn-pagination">
+            Próximo
+        </button>
+    </div>
+
+    <div class="pagination-info">
+        Mostrando {{ pedidos().length }} de {{ totalElements() }} pedidos
+    </div>
+</div>
