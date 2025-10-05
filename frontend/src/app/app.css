@@ -1,0 +1,113 @@
+.error-snack {
+  background-color: #dc3545 !important;
+  color: white !important;
+  font-weight: 500;
+}
+
+.success-snack {
+  background-color: #28a745 !important;
+  color: white !important;
+  font-weight: 500;
+}
+
+body,
+html {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 60px;
+}
+
+.navbar-brand h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.navbar-nav {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+  color: white;
+}
+
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.main-content {
+  flex: 1;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 60px);
+}
+
+/* Ícones */
+.icon-dashboard::before {
+  content: '📊';
+}
+
+.icon-box::before {
+  content: '📦';
+}
+
+.icon-clipboard::before {
+  content: '📋';
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 15px 20px;
+    gap: 15px;
+  }
+
+  .navbar-nav {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+  }
+}
+
+body {
+  background-color: #f8f9fa;
+  color: #333;
+  min-height: 100vh;
+}
