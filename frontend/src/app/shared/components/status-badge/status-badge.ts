@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { OrderStatus } from '../../../core/models/status-pedido.enum';
+import { StatusPedido } from '../../../core/models/status-pedido.enum';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,21 +9,21 @@ import { CommonModule } from '@angular/common';
   styleUrl: './status-badge.css'
 })
 export class StatusBadge {
-  @Input() status!: OrderStatus;
+  @Input() status!: StatusPedido;
 
   getStatusClass(): string {
     switch (this.status) {
-      case OrderStatus.PENDENTE:
+      case StatusPedido.PENDENTE:
         return 'status-pendente';
-      case OrderStatus.PROCESSANDO:
+      case StatusPedido.PROCESSANDO:
         return 'status-processando';
-      case OrderStatus.CONFIRMADO:
+      case StatusPedido.CONFIRMADO:
         return 'status-confirmado';
-      case OrderStatus.ENVIADO:
+      case StatusPedido.ENVIADO:
         return 'status-enviado';
-      case OrderStatus.ENTREGUE:
+      case StatusPedido.ENTREGUE:
         return 'status-entregue';
-      case OrderStatus.CANCELADO:
+      case StatusPedido.CANCELADO:
         return 'status-cancelado';
       default:
         return 'status-default';
@@ -32,17 +32,17 @@ export class StatusBadge {
 
   getStatusLabel(): string {
     switch (this.status) {
-      case OrderStatus.PENDENTE:
+      case StatusPedido.PENDENTE:
         return 'Pendente';
-      case OrderStatus.PROCESSANDO:
+      case StatusPedido.PROCESSANDO:
         return 'Processando';
-      case OrderStatus.CONFIRMADO:
+      case StatusPedido.CONFIRMADO:
         return 'Confirmado';
-      case OrderStatus.ENVIADO:
+      case StatusPedido.ENVIADO:
         return 'Enviado';
-      case OrderStatus.ENTREGUE:
+      case StatusPedido.ENTREGUE:
         return 'Entregue';
-      case OrderStatus.CANCELADO:
+      case StatusPedido.CANCELADO:
         return 'Cancelado';
       default:
         return 'Desconhecido';
