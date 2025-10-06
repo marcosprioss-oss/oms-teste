@@ -1,74 +1,66 @@
 <div class="produtos-container">
-    <div class="header">
-        <h1>Gerenciamento de Produtos</h1>
-        <div class="actions">
-            <div class="search-box">
-                <input type="text" placeholder="Buscar produtos..." [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
-                    class="search-input">
-                <button (click)="onSearch()" class="search-btn">Buscar</button>
-            </div>
-            <a routerLink="/novo-produto" class="btn-primary">
-                <i class="icon-plus"></i>
-                Novo Produto
-            </a>
-        </div>
-    </div>
+    <mat-toolbar class="header-toolbar">
+        <span>Gerenciamento de Produtos</span>
+        <span class="spacer"></span>
+        <button mat-raised-button color="primary" routerLink="/novo">
+            <mat-icon>add</mat-icon>
+            Novo Produto
+        </button>
+    </mat-toolbar>
 
-    <div class="table-container">
-        <table class="produtos-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Preço</th>
-                    <th>Estoque</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let produto of produtos()">
-                    <td>{{ produto.id }}</td>
-                    <td>{{ produto.nome }}</td>
-                    <td>{{ produto.descricao }}</td>
-                    <td>{{ produto.preco | currency:'BRL':'symbol':'1.2-2' }}</td>
-                    <td>
-                        <span [class]="produto.quantidadeEstoque > 0 ? 'stock-available' : 'stock-unavailable'">
-                            {{ produto.quantidadeEstoque }}
+    <mat-card class="table-card">
+        <mat-card-content>
+            <table mat-table [dataSource]="produtos()" class="produtos-table">
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>ID</th>
+                    <td mat-cell *matCellDef="let produto">{{ produto.id }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="nome">
+                    <th mat-header-cell *matHeaderCellDef>Nome</th>
+                    <td mat-cell *matCellDef="let produto">{{ produto.nome }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="descricao">
+                    <th mat-header-cell *matHeaderCellDef>Descrição</th>
+                    <td mat-cell *matCellDef="let produto">{{ produto.descricao }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="preco">
+                    <th mat-header-cell *matHeaderCellDef>Preço</th>
+                    <td mat-cell *matCellDef="let produto">{{ produto.preco | currency:'BRL':'symbol':'1.2-2' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="estoque">
+                    <th mat-header-cell *matHeaderCellDef>Estoque</th>
+                    <td mat-cell *matCellDef="let produto">
+                        <span [class]="produto.quantidade > 0 ? 'stock-available' : 'stock-unavailable'">
+                            {{ produto.quantidade }}
                         </span>
                     </td>
-                    <td class="actions-cell">
-                        <button (click)="excluirProduto(produto.id!)" class="btn-danger btn-sm" title="Excluir">
-                            <i class="icon-trash"></i>
+                </ng-container>
+
+                <ng-container matColumnDef="acoes">
+                    <th mat-header-cell *matHeaderCellDef>Ações</th>
+                    <td mat-cell *matCellDef="let produto">
+                        <button mat-icon-button color="warn" [routerLink]="['/produtos', produto.id]" title="Editar">
+                            <mat-icon>edit</mat-icon>
                         </button>
                     </td>
-                </tr>
-                <tr *ngIf="produtos().length === 0">
-                    <td colspan="6" class="no-data">
-                        Nenhum produto encontrado
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                </ng-container>
 
-    <div class="pagination" *ngIf="totalPages() > 1">
-        <button (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0" class="btn-pagination">
-            Anterior
-        </button>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
 
-        <span *ngFor="let page of getPages()" (click)="onPageChange(page)"
-            [class]="page === currentPage() ? 'page-number active' : 'page-number'">
-            {{ page + 1 }}
-        </span>
+            <div class="no-data" *ngIf="produtos()?.length === 0">
+                <mat-icon>inbox</mat-icon>
+                <p>Nenhum produto encontrado</p>
+            </div>
+        </mat-card-content>
 
-        <button (click)="onPageChange(currentPage() + 1)" [disabled]="currentPage() === totalPages() - 1"
-            class="btn-pagination">
-            Próximo
-        </button>
-    </div>
-
-    <div class="pagination-info">
-        Mostrando {{ produtos().length }} de {{ totalElements() }} produtos
-    </div>
+        <mat-paginator [length]="totalElements()" [pageSize]="pageSize()" [pageIndex]="currentPage()"
+            [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+        </mat-paginator>
+    </mat-card>
 </div>

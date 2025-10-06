@@ -2,13 +2,30 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { ProdutoService } from '../../../core/services/produto';
 import { Produto, ProdutoCreateRequest } from '../../../core/models/produto.model';
 import { Loading } from '../../../core/services/loading';
+import { NotificationService } from '../../../core/services/notification';
 
 @Component({
   selector: 'app-produto-form',
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatToolbarModule
+  ],
   templateUrl: './produto-form.html',
   styleUrl: './produto-form.css'
 })
@@ -23,7 +40,8 @@ export class ProdutoForm implements OnInit {
     private produtoService: ProdutoService,
     private router: Router,
     private route: ActivatedRoute,
-    private loading: Loading
+    private loading: Loading,
+    private notification: NotificationService
   ) {
     this.initForm();
   }
@@ -37,12 +55,13 @@ export class ProdutoForm implements OnInit {
     }
   }
 
+
   initForm() {
     this.produtoForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(2)]],
       descricao: ['', [Validators.required, Validators.minLength(5)]],
       preco: [0, [Validators.required, Validators.min(0.01)]],
-      quantidadeEstoque: [0, [Validators.required, Validators.min(0)]]
+      quantidade: [0, [Validators.required, Validators.min(0)]]
     });
   }
 
@@ -50,6 +69,12 @@ export class ProdutoForm implements OnInit {
     this.loading.show();
     this.produtoService.buscarProdutoPorId(id).subscribe({
       next: (produto: Produto) => {
+        if (this.isEditMode()) {
+          this.produtoForm.get('nome')?.disable();
+          this.produtoForm.get('descricao')?.disable();
+          this.produtoForm.get('preco')?.disable();
+        }
+
         this.produtoForm.patchValue(produto);
         this.loading.hide();
       },
@@ -73,6 +98,7 @@ export class ProdutoForm implements OnInit {
           next: () => {
             this.loading.hide();
             this.isLoading.set(false);
+            this.notification.showSuccess('Produto atualizado com sucesso!');
             this.router.navigate(['/produtos']);
           },
           error: (error) => {
@@ -86,6 +112,7 @@ export class ProdutoForm implements OnInit {
           next: () => {
             this.loading.hide();
             this.isLoading.set(false);
+            this.notification.showSuccess('Produto criado com sucesso!');
             this.router.navigate(['/produtos']);
           },
           error: (error) => {
@@ -128,7 +155,7 @@ export class ProdutoForm implements OnInit {
       nome: 'Nome',
       descricao: 'Descrição',
       preco: 'Preço',
-      quantidadeEstoque: 'Quantidade em Estoque'
+      quantidade: 'Quantidade em Estoque'
     };
     return labels[fieldName] || fieldName;
   }
