@@ -1,14 +1,39 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProdutoService } from '../../../core/services/produto';
-import { Produto, PageResponse } from '../../../core/models/produto.model';
+import { Produto } from '../../../core/models/produto.model';
 import { Loading } from '../../../core/services/loading';
+import { NotificationService } from '../../../core/services/notification';
+import { PageResponse } from '../../../core/models/pedido.model';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-produtos-list',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatPaginatorModule,
+    MatCardModule,
+    MatToolbarModule,
+    MatSnackBarModule
+  ],
   templateUrl: './produtos-list.html',
   styleUrl: './produtos-list.css'
 })
@@ -20,9 +45,12 @@ export class ProdutosList implements OnInit {
   pageSize = signal(10);
   searchTerm = signal('');
 
+  displayedColumns: string[] = ['id', 'nome', 'descricao', 'preco', 'estoque', 'acoes'];
+
   constructor(
     private produtoService: ProdutoService,
-    private loading: Loading
+    private loading: Loading,
+    private notification: NotificationService
   ) { }
 
   ngOnInit() {
@@ -47,6 +75,7 @@ export class ProdutosList implements OnInit {
         this.loading.hide();
       }
     });
+    this.loading.hide();
   }
 
   onSearch() {
@@ -54,24 +83,10 @@ export class ProdutosList implements OnInit {
     this.carregarProdutos();
   }
 
-  onPageChange(page: number) {
-    this.currentPage.set(page);
+  onPageChange(event: PageEvent) {
+    this.currentPage.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
     this.carregarProdutos();
-  }
-
-  excluirProduto(id: number) {
-    if (confirm('Tem certeza que deseja excluir este produto?')) {
-      this.loading.show();
-      this.produtoService.excluirProduto(id).subscribe({
-        next: () => {
-          this.carregarProdutos();
-        },
-        error: (error) => {
-          console.error('Erro ao excluir produto:', error);
-          this.loading.hide();
-        }
-      });
-    }
   }
 
   getPages(): number[] {
