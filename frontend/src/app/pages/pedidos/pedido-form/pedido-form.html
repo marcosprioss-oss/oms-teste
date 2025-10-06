@@ -8,15 +8,8 @@
     </div>
 
     <form [formGroup]="pedidoForm" (ngSubmit)="onSubmit()" class="pedido-form">
-        <!-- Observações -->
-        <div class="form-group">
-            <label for="observacoes">Observações</label>
-            <textarea id="observacoes" formControlName="observacoes" class="form-control"
-                placeholder="Observações adicionais sobre o pedido" rows="3"></textarea>
-        </div>
 
-        <!-- Itens do Pedido -->
-        <div class="form-section">
+        <div class="form-section" formArrayName="itens">
             <div class="section-header">
                 <h3>Itens do Pedido</h3>
                 <button type="button" (click)="adicionarItem()" class="btn-add-item">
@@ -32,11 +25,11 @@
                         <label>Produto *</label>
                         <select formControlName="produtoId" (change)="onProdutoChange(i)" class="form-control"
                             [class.error]="hasItemError(i, 'produtoId')">
-                            <option value="">Selecione um produto</option>
-                            <option *ngFor="let produto of produtos()" [value]="produto.id"
-                                [disabled]="produto.quantidadeEstoque === 0">
+                            <option [ngValue]="null">Selecione um produto</option>
+                            <option *ngFor="let produto of produtos()" [ngValue]="produto.id"
+                                [disabled]="produto.quantidade === 0">
                                 {{ produto.nome }} - {{ produto.preco | currency:'BRL':'symbol':'1.2-2' }}
-                                (Estoque: {{ produto.quantidadeEstoque }})
+                                (Estoque: {{ produto.quantidade }})
                             </option>
                         </select>
                         <div class="error-message" *ngIf="hasItemError(i, 'produtoId')">
@@ -76,7 +69,6 @@
             </div>
         </div>
 
-        <!-- Resumo do Pedido -->
         <div class="order-summary" *ngIf="itensFormArray.length > 0">
             <div class="summary-header">
                 <h3>Resumo do Pedido</h3>
@@ -93,7 +85,6 @@
             </div>
         </div>
 
-        <!-- Ações do Formulário -->
         <div class="form-actions">
             <button type="button" routerLink="/pedidos" class="btn-cancel">
                 Cancelar

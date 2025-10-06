@@ -4,8 +4,8 @@ import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } fr
 import { Router, RouterModule } from '@angular/router';
 import { PedidoService } from '../../../core/services/pedido';
 import { ProdutoService } from '../../../core/services/produto';
-import { Produto, PageResponse } from '../../../core/models/produto.model';
-import { PedidoCreateRequest, ItemPedidoCreateRequest } from '../../../core/models/pedido.model';
+import { Produto } from '../../../core/models/produto.model';
+import { PedidoCreateRequest, ItemPedidoCreateRequest, PageResponse } from '../../../core/models/pedido.model';
 import { Loading } from '../../../core/services/loading';
 
 @Component({
@@ -36,7 +36,6 @@ export class PedidoForm implements OnInit {
 
   initForm() {
     this.pedidoForm = this.fb.group({
-      observacoes: [''],
       itens: this.fb.array([])
     });
   }
@@ -61,10 +60,11 @@ export class PedidoForm implements OnInit {
 
   adicionarItem() {
     const itemForm = this.fb.group({
-      produtoId: ['', Validators.required],
-      quantidade: [1, [Validators.required, Validators.min(1)]]
+      produtoId: [null, Validators.required],
+      quantidade: [1, [Validators.required, Validators.min(1)]],
+      precoUnitario: [0],
+      subtotal: [0]
     });
-
     this.itensFormArray.push(itemForm);
     this.calcularValorTotal();
   }
@@ -85,7 +85,7 @@ export class PedidoForm implements OnInit {
   calcularValorTotal() {
     let total = 0;
     this.itensFormArray.controls.forEach((itemForm, index) => {
-      const produtoId = itemForm.get('produtoId')?.value;
+      const produtoId = Number(itemForm.get('produtoId')?.value);
       const quantidade = itemForm.get('quantidade')?.value || 0;
 
       if (produtoId) {
@@ -105,15 +105,14 @@ export class PedidoForm implements OnInit {
       this.loading.show();
 
       const formValue = this.pedidoForm.value;
-      const pedidoData: PedidoCreateRequest = {
-        observacoes: formValue.observacoes,
-        itens: formValue.itens.map((item: any) => ({
-          produtoId: item.produtoId,
+      const pedido = {
+        items: formValue.itens.map((item: any) => ({
+          produto: { id: item.produtoId },
           quantidade: item.quantidade
         }))
       };
 
-      this.pedidoService.criarPedido(pedidoData).subscribe({
+      this.pedidoService.criarPedido(pedido).subscribe({
         next: () => {
           this.loading.hide();
           this.isLoading.set(false);
@@ -137,7 +136,8 @@ export class PedidoForm implements OnInit {
     });
 
     this.itensFormArray.controls.forEach(itemForm => {
-      Object.keys(itemForm.controls).forEach(key => {
+      const group = itemForm as FormGroup;
+      Object.keys(group.controls).forEach(key => {
         const control = itemForm.get(key);
         control?.markAsTouched();
       });
@@ -156,7 +156,7 @@ export class PedidoForm implements OnInit {
 
   getProdutoEstoque(produtoId: number): number {
     const produto = this.produtos().find(p => p.id === produtoId);
-    return produto ? produto.quantidadeEstoque : 0;
+    return produto ? produto.quantidade : 0;
   }
 
   getItemError(index: number, fieldName: string): string {
