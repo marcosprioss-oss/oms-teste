@@ -9,7 +9,14 @@ import { Dashboard } from './pages/dashboard/dashboard';
 export const routes: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     { path: 'dashboard', component: Dashboard },
-    { path: 'produtos', component: ProdutosList },
+    {
+        path: 'produtos',
+        children: [
+            { path: '', component: ProdutosList },
+            { path: 'novo', component: ProdutoForm },
+            { path: ':id', component: ProdutoForm }
+        ]
+    },
     { path: 'novo-produto', component: ProdutoForm },
     { path: 'produtos/:id', component: ProdutoForm },
     { path: 'pedidos', component: PedidosList },
