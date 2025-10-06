@@ -1,0 +1,146 @@
+<div class="pedido-details-container" *ngIf="pedido()">
+    <div class="header">
+        <div class="header-right">
+            <app-status-badge [status]="pedido()!.status"></app-status-badge>
+            <button *ngIf="podeCancelar(pedido()!.status)" (click)="cancelarPedido()" class="btn-cancel">
+                Cancelar Pedido
+            </button>
+        </div>
+    </div>
+
+    <div class="details-grid">
+        <div class="info-card">
+            <h3>Informações Gerais</h3>
+            <div class="info-row">
+                <span class="label">ID:</span>
+                <span class="value">{{ pedido()?.id }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Status:</span>
+                <span class="value">
+                    <ng-container *ngIf="podeEditarStatus(pedido()!.status); else statusReadonly">
+                        <select [(ngModel)]="pedido()!.status" (change)="alterarStatus(pedido()!.status)">
+                            <option [value]="StatusPedido.PROCESSANDO">Processando</option>
+                            <option [value]="StatusPedido.CONFIRMADO">Confirmado</option>
+                            <option [value]="StatusPedido.ENVIADO">Enviado</option>
+                            <option [value]="StatusPedido.ENTREGUE">Entregue</option>
+                            <option [value]="StatusPedido.CANCELADO">Cancelado</option>
+                        </select>
+                    </ng-container>
+                    <ng-template #statusReadonly>
+                        <app-status-badge [status]="pedido()!.status"></app-status-badge>
+                    </ng-template>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="label">Data de Criação:</span>
+                <span class="value">{{ pedido()?.criacao | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+        </div>
+
+
+        <div class="info-card">
+            <h3>Resumo Financeiro</h3>
+            <div class="info-row">
+                <span class="label">Total de Itens:</span>
+                <span class="value">{{ pedido()?.items?.length }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Valor Total:</span>
+                <span class="value total-value">{{ pedido()?.total | currency:'BRL':'symbol':'1.2-2' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="items-section">
+        <h3>Itens do Pedido</h3>
+        <div class="items-table-container">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço Unitário</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of pedido()?.items">
+                        <td>
+                            <div class="product-info">
+                                <div class="product-name">{{ item.produto?.nome || 'Produto não encontrado' }}</div>
+                                <div class="product-description" *ngIf="item.produto?.descricao">
+                                    {{ item.produto?.descricao }}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="quantity-cell">{{ item.quantidade }}</td>
+                        <td class="price-cell">{{ item.precoUnitario | currency:'BRL':'symbol':'1.2-2' }}</td>
+                        <td class="subtotal-cell">{{ item.subtotal | currency:'BRL':'symbol':'1.2-2' }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="3" class="total-label">Total:</td>
+                        <td class="total-amount">{{ pedido()?.total | currency:'BRL':'symbol':'1.2-2' }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="status-history" *ngIf="pedido()?.status">
+        <h3>Histórico de Status</h3>
+        <div class="status-timeline">
+            <div class="timeline-item completed">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Pedido Criado</div>
+                    <div class="timeline-date">{{ pedido()?.criacao | date:'dd/MM/yyyy HH:mm' }}</div>
+                </div>
+            </div>
+
+            <div class="timeline-item" [class.completed]="pedido()!.status !== StatusPedido.PENDENTE"
+                [class.current]="pedido()!.status === StatusPedido.PROCESSANDO">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Processando</div>
+                    <div class="timeline-description">Validando estoque e processando pedido</div>
+                </div>
+            </div>
+
+            <div class="timeline-item"
+                [class.completed]="[StatusPedido.CONFIRMADO, StatusPedido.ENVIADO, StatusPedido.ENTREGUE].includes(pedido()!.status)"
+                [class.current]="pedido()!.status === StatusPedido.CONFIRMADO">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Confirmado</div>
+                    <div class="timeline-description">Pedido confirmado e preparado para envio</div>
+                </div>
+            </div>
+
+            <div class="timeline-item"
+                [class.completed]="[StatusPedido.ENVIADO, StatusPedido.ENTREGUE].includes(pedido()!.status)"
+                [class.current]="pedido()!.status === StatusPedido.ENVIADO">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Enviado</div>
+                    <div class="timeline-description">Pedido enviado para entrega</div>
+                </div>
+            </div>
+
+            <div class="timeline-item" [class.completed]="pedido()!.status === StatusPedido.ENTREGUE"
+                [class.current]="pedido()!.status === StatusPedido.ENTREGUE">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Entregue</div>
+                    <div class="timeline-description">Pedido entregue com sucesso</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loading-container" *ngIf="!pedido()">
+    <div class="loading-message">Carregando detalhes do pedido...</div>
+</div>

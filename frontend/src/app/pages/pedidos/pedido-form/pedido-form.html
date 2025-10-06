@@ -1,0 +1,98 @@
+<div class="pedido-form-container">
+    <div class="form-header">
+        <h1>Novo Pedido</h1>
+        <a routerLink="/pedidos" class="btn-secondary">
+            <i class="icon-arrow-left"></i>
+            Voltar
+        </a>
+    </div>
+
+    <form [formGroup]="pedidoForm" (ngSubmit)="onSubmit()" class="pedido-form">
+
+        <div class="form-section" formArrayName="itens">
+            <div class="section-header">
+                <h3>Itens do Pedido</h3>
+                <button type="button" (click)="adicionarItem()" class="btn-add-item">
+                    <i class="icon-plus"></i>
+                    Adicionar Item
+                </button>
+            </div>
+
+            <div class="items-container" *ngIf="itensFormArray.length > 0">
+                <div *ngFor="let item of itensFormArray.controls; let i = index" class="item-row" [formGroupName]="i">
+
+                    <div class="item-product">
+                        <label>Produto *</label>
+                        <select formControlName="produtoId" (change)="onProdutoChange(i)" class="form-control"
+                            [class.error]="hasItemError(i, 'produtoId')">
+                            <option [ngValue]="null">Selecione um produto</option>
+                            <option *ngFor="let produto of produtos()" [ngValue]="produto.id"
+                                [disabled]="produto.quantidade === 0">
+                                {{ produto.nome }} - {{ produto.preco | currency:'BRL':'symbol':'1.2-2' }}
+                                (Estoque: {{ produto.quantidade }})
+                            </option>
+                        </select>
+                        <div class="error-message" *ngIf="hasItemError(i, 'produtoId')">
+                            {{ getItemError(i, 'produtoId') }}
+                        </div>
+                    </div>
+
+                    <div class="item-quantity">
+                        <label>Quantidade *</label>
+                        <input type="number" formControlName="quantidade" (input)="onQuantidadeChange(i)"
+                            class="form-control" [class.error]="hasItemError(i, 'quantidade')" min="1"
+                            [max]="getProdutoEstoque(itensFormArray.at(i).get('produtoId')?.value)">
+                        <div class="error-message" *ngIf="hasItemError(i, 'quantidade')">
+                            {{ getItemError(i, 'quantidade') }}
+                        </div>
+                    </div>
+
+                    <div class="item-subtotal">
+                        <label>Subtotal</label>
+                        <div class="subtotal-value">
+                            {{ getProdutoPreco(itensFormArray.at(i).get('produtoId')?.value) *
+                            (itensFormArray.at(i).get('quantidade')?.value || 0) | currency:'BRL':'symbol':'1.2-2' }}
+                        </div>
+                    </div>
+
+                    <div class="item-actions">
+                        <button type="button" (click)="removerItem(i)" class="btn-remove-item" title="Remover item">
+                            <i class="icon-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-items" *ngIf="itensFormArray.length === 0">
+                <p>Nenhum item adicionado ao pedido.</p>
+                <p>Clique em "Adicionar Item" para começar.</p>
+            </div>
+        </div>
+
+        <div class="order-summary" *ngIf="itensFormArray.length > 0">
+            <div class="summary-header">
+                <h3>Resumo do Pedido</h3>
+            </div>
+            <div class="summary-content">
+                <div class="summary-row">
+                    <span>Total de Itens:</span>
+                    <span>{{ itensFormArray.length }}</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Valor Total:</span>
+                    <span>{{ valorTotal() | currency:'BRL':'symbol':'1.2-2' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" routerLink="/pedidos" class="btn-cancel">
+                Cancelar
+            </button>
+            <button type="submit" class="btn-primary" [disabled]="isLoading() || itensFormArray.length === 0">
+                <span *ngIf="isLoading()" class="spinner"></span>
+                Criar Pedido
+            </button>
+        </div>
+    </form>
+</div>

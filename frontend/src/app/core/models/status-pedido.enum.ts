@@ -1,0 +1,8 @@
+export enum StatusPedido {
+    PENDENTE = 'PENDENTE',
+    PROCESSANDO = 'PROCESSANDO',
+    CONFIRMADO = 'CONFIRMADO',
+    ENVIADO = 'ENVIADO',
+    ENTREGUE = 'ENTREGUE',
+    CANCELADO = 'CANCELADO'
+}
