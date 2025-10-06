@@ -30,7 +30,7 @@ public class PedidoScheduler {
 	@Scheduled(fixedRateString = "${pedidos.job.rate:120000}")
 	@Transactional
 	public void processoaPedidos(){
-		List<Pedido> pendentes = repo.findByStatus(StatusPedido.Pendente);
+		List<Pedido> pendentes = repo.findByStatus(StatusPedido.PENDENTE);
 		pendentes.stream().forEach(o->{
 			boolean ok = true;
 			for (ItemPedido ip : o.getItems()) {
@@ -45,10 +45,10 @@ public class PedidoScheduler {
 				}
 			}
 			if (ok) {
-				o.setStatus(StatusPedido.Processando);
+				o.setStatus(StatusPedido.PROCESSANDO);
 				log.info("Pedido {} -> PROCESSANDO", o.getId());
 			} else {
-				o.setStatus(StatusPedido.Cancelado);
+				o.setStatus(StatusPedido.CANCELADO);
 				log.info("Pedido {} -> CANCELADO (estoque insuficiente)", o.getId());
 			}
 			repo.save(o);
