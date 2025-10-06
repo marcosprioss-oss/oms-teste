@@ -1,9 +1,12 @@
 package com.marcos.backend.controller;
 
 import com.marcos.backend.documentation.ProdutoDocumentation;
+import com.marcos.backend.dto.PageResponse;
 import com.marcos.backend.entity.Produto;
 import com.marcos.backend.service.ProdutoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +18,9 @@ public class ProdutoController implements ProdutoDocumentation {
 	public ProdutoController(ProdutoService service){this.service = service;}
 
 	@GetMapping
-	public List<Produto> listAll() {
-		return service.listAll();
+	public PageResponse<Produto> listAll(@RequestParam(defaultValue = "0") int page,
+									 @RequestParam(defaultValue = "10") int size) {
+		return service.listAll(page,size);
 	}
 
 	@GetMapping("/{id}")

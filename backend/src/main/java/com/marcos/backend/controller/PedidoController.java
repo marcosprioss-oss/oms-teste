@@ -1,6 +1,8 @@
 package com.marcos.backend.controller;
 
 import com.marcos.backend.documentation.PedidoDocumentation;
+import com.marcos.backend.dto.PageResponse;
+import com.marcos.backend.dto.StatusResumoDTO;
 import com.marcos.backend.entity.Pedido;
 import com.marcos.backend.entity.StatusPedido;
 import com.marcos.backend.service.PedidoService;
@@ -20,8 +22,10 @@ public class PedidoController implements PedidoDocumentation {
 	}
 
 	@GetMapping
-	public List<Pedido> listarPedidos() {
-		return service.listPedidos();
+	@Override
+	public PageResponse<Pedido> listarPedidos(@RequestParam(defaultValue = "0") int page,
+											  @RequestParam(defaultValue = "10") int size) {
+		return service.listPedidos(page,size);
 	}
 
 	@Override
@@ -45,9 +49,15 @@ public class PedidoController implements PedidoDocumentation {
 	}
 
 	@Override
-	@PostMapping("/{id}/cancel")
+	@PostMapping("/{id}/cancelar")
 	public ResponseEntity<Object> cancelaPedido(@PathVariable Integer id) {
 		service.cancelaPedido(id);
 		return ResponseEntity.noContent().build();
+	}
+
+
+	@GetMapping("/estatisticas")
+	public List<StatusResumoDTO> obterResumoStatus(){
+		return service.obterResumoStatus();
 	}
 }
