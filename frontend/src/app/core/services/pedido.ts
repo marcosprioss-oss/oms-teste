@@ -4,13 +4,11 @@ import { HttpParams } from '@angular/common/http';
 import { ApiService } from './api';
 import {
   Pedido,
-  PedidoCreateRequest,
   PedidoUpdateRequest,
   PedidoFilter,
   PageResponse,
-  OrderStatus
 } from '../models/pedido.model';
-
+import { StatusPedido } from '../models/status-pedido.enum';
 @Injectable({
   providedIn: 'root'
 })
@@ -43,19 +41,19 @@ export class PedidoService {
     return this.apiService.get<Pedido>(`${this.endpoint}/${id}`);
   }
 
-  criarPedido(pedido: PedidoCreateRequest): Observable<Pedido> {
+  criarPedido(pedido: any): Observable<Pedido> {
     return this.apiService.post<Pedido>(this.endpoint, pedido);
   }
 
-  atualizarPedido(id: number, pedido: PedidoUpdateRequest): Observable<Pedido> {
-    return this.apiService.put<Pedido>(`${this.endpoint}/${id}`, pedido);
+  alterarStatus(id: number, status: StatusPedido): Observable<Pedido> {
+    return this.apiService.post<Pedido>(`${this.endpoint}/${id}`, `"${status}"`, true);
   }
 
   cancelarPedido(id: number): Observable<Pedido> {
-    return this.apiService.put<Pedido>(`${this.endpoint}/${id}/cancelar`, {});
+    return this.apiService.post<Pedido>(`${this.endpoint}/${id}/cancelar`, {});
   }
 
-  obterEstatisticasPedidos(): Observable<{ [key in OrderStatus]: number }> {
-    return this.apiService.get<{ [key in OrderStatus]: number }>(`${this.endpoint}/estatisticas`);
+  obterEstatisticasPedidos(): Observable<{ status: string, quantidade: number }[]> {
+    return this.apiService.get<{ status: string, quantidade: number }[]>(`${this.endpoint}/estatisticas`);
   }
 }

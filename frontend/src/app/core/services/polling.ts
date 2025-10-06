@@ -2,16 +2,16 @@ import { Injectable, signal } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { PedidoService } from './pedido';
 import { ProdutoService } from './produto';
-import { OrderStatus } from '../models/status-pedido.enum';
+import { StatusPedido } from '../models/status-pedido.enum';
 
 @Injectable({
     providedIn: 'root'
 })
 export class PollingService {
     private subscription?: Subscription;
-    private readonly POLLING_INTERVAL = 30000; // 30 segundos
+    private readonly POLLING_INTERVAL = 30000;
 
-    // Signals para notificar componentes sobre atualizações
+
     pedidosUpdated = signal(false);
     produtosUpdated = signal(false);
     estatisticasUpdated = signal(false);
@@ -39,11 +39,9 @@ export class PollingService {
     }
 
     private checkForUpdates() {
-        // Verificar atualizações de pedidos
-        this.pedidoService.obterEstatisticasPedidos().subscribe({
+        this.pedidoService.listarPedidos().subscribe({
             next: () => {
                 this.estatisticasUpdated.set(true);
-                // Reset signal após notificação
                 setTimeout(() => this.estatisticasUpdated.set(false), 100);
             },
             error: (error) => {
@@ -52,15 +50,13 @@ export class PollingService {
         });
     }
 
-    // Método para forçar atualização manual
     forceUpdate() {
         this.checkForUpdates();
     }
 
-    // Método para verificar se há pedidos pendentes que podem ter mudado de status
     checkPendingOrders() {
         this.pedidoService.listarPedidos({
-            status: OrderStatus.PENDENTE,
+            status: StatusPedido.PENDENTE,
             page: 0,
             size: 1
         }).subscribe({

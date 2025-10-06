@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { ApiService } from './api';
-import { Produto, ProdutoCreateRequest, ProdutoUpdateRequest, PageResponse } from '../models/produto.model';
+import { Produto, ProdutoCreateRequest, ProdutoUpdateRequest } from '../models/produto.model';
+import { PageResponse } from '../models/pedido.model';
 
 @Injectable({
   providedIn: 'root'
@@ -36,11 +37,7 @@ export class ProdutoService {
     return this.apiService.put<Produto>(`${this.endpoint}/${id}`, produto);
   }
 
-  excluirProduto(id: number): Observable<void> {
-    return this.apiService.delete<void>(`${this.endpoint}/${id}`);
-  }
-
-  atualizarEstoque(id: number, quantidade: number): Observable<Produto> {
-    return this.apiService.put<Produto>(`${this.endpoint}/${id}/estoque`, { quantidadeEstoque: quantidade });
-  }
+  // atualizarEstoque(id: number, quantidade: number): Observable<Produto> {
+  //   return this.apiService.put<Produto>(`${this.endpoint}/${id}/estoque`, { quantidade: quantidade });
+  // }
 }
