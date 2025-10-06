@@ -3,21 +3,19 @@ export interface Produto {
     nome: string;
     descricao: string;
     preco: number;
-    quantidadeEstoque: number;
-    dataCriacao?: Date;
-    dataAtualizacao?: Date;
+    quantidade: number;
 }
 
 export interface ProdutoCreateRequest {
     nome: string;
     descricao: string;
     preco: number;
-    quantidadeEstoque: number;
+    quantidade: number;
 }
 
 export interface ProdutoUpdateRequest {
     nome?: string;
     descricao?: string;
     preco?: number;
-    quantidadeEstoque?: number;
+    quantidade?: number;
 }

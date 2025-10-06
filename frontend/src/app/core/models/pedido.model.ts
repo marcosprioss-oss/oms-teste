@@ -1,9 +1,8 @@
-import { OrderStatus } from './status-pedido.enum';
+import { StatusPedido } from './status-pedido.enum';
 import { Produto } from './produto.model';
 
 export interface ItemPedido {
     id?: number;
-    produtoId: number;
     produto?: Produto;
     quantidade: number;
     precoUnitario: number;
@@ -12,18 +11,14 @@ export interface ItemPedido {
 
 export interface Pedido {
     id?: number;
-    numero?: string;
-    status: OrderStatus;
-    dataCriacao?: Date;
-    dataAtualizacao?: Date;
-    itens: ItemPedido[];
-    valorTotal: number;
-    observacoes?: string;
+    status: StatusPedido;
+    criacao?: Date;
+    items: ItemPedido[];
+    total: number;
 }
 
 export interface PedidoCreateRequest {
     itens: ItemPedidoCreateRequest[];
-    observacoes?: string;
 }
 
 export interface ItemPedidoCreateRequest {
@@ -32,12 +27,11 @@ export interface ItemPedidoCreateRequest {
 }
 
 export interface PedidoUpdateRequest {
-    status?: OrderStatus;
-    observacoes?: string;
+    status?: StatusPedido;
 }
 
 export interface PedidoFilter {
-    status?: OrderStatus;
+    status?: StatusPedido;
     dataInicio?: Date;
     dataFim?: Date;
     page?: number;
@@ -53,3 +47,27 @@ export interface PageResponse<T> {
     first: boolean;
     last: boolean;
 }
+
+export const mapItemPedido = (item: any): ItemPedido => {
+    const precoUnitario = item.produto.preco;
+    const quantidade = item.quantidade;
+    return {
+        id: item.id,
+        produto: item.produto,
+        quantidade,
+        precoUnitario,
+        subtotal: precoUnitario * quantidade,
+    };
+};
+
+export const mapPedido = (pedido: any): Pedido => {
+    const items = pedido.items?.map(mapItemPedido) || [];
+    const total = items.reduce((acc: number, item: ItemPedido) => acc + item.subtotal, 0);
+    return {
+        id: pedido.id,
+        status: pedido.status,
+        criacao: pedido.criacao ? new Date(pedido.criacao) : undefined,
+        items,
+        total,
+    };
+};

@@ -1,4 +1,4 @@
-export enum OrderStatus {
+export enum StatusPedido {
     PENDENTE = 'PENDENTE',
     PROCESSANDO = 'PROCESSANDO',
     CONFIRMADO = 'CONFIRMADO',
