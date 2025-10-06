@@ -2,6 +2,7 @@ package com.marcos.backend.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
@@ -46,8 +47,7 @@ public class CacheConfig {
 
 		RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
 				.entryTtl(Duration.ofHours(1))
-				.serializeValuesWith(RedisSerializationContext.SerializationPair
-						.fromSerializer(serializer));
+				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
 
 		return RedisCacheManager.builder(connectionFactory)
 				.cacheDefaults(config)
