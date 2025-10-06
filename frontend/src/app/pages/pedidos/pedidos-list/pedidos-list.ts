@@ -1,16 +1,34 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { PedidoService } from '../../../core/services/pedido';
-import { Pedido, PedidoFilter, PageResponse, OrderStatus } from '../../../core/models/pedido.model';
+import { Pedido, PedidoFilter, PageResponse, mapPedido } from '../../../core/models/pedido.model';
 import { Loading } from '../../../core/services/loading';
 import { PollingService } from '../../../core/services/polling';
 import { StatusBadge } from '../../../shared/components/status-badge/status-badge';
-
+import { StatusPedido } from '../../../core/models/status-pedido.enum';
+import { MatColumnDef, MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-pedidos-list',
-  imports: [CommonModule, FormsModule, RouterModule, StatusBadge],
+  imports: [CommonModule, FormsModule, RouterModule, StatusBadge, MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatPaginatorModule,
+    MatCardModule,
+    MatToolbarModule,
+    MatSnackBarModule,
+    MatColumnDef],
   templateUrl: './pedidos-list.html',
   styleUrl: './pedidos-list.css'
 })
@@ -20,20 +38,17 @@ export class PedidosList implements OnInit, OnDestroy {
   totalPages = signal(0);
   currentPage = signal(0);
   pageSize = signal(10);
+  statusFilter = signal<StatusPedido | ''>('');
 
-  // Filtros
-  statusFilter = signal<OrderStatus | ''>('');
-  dataInicio = signal('');
-  dataFim = signal('');
+  displayedColumns: string[] = ['id', 'status', 'valorTotal', 'item', 'acoes'];
 
-  // Estatísticas
-  estatisticas = signal<{ [key in OrderStatus]: number }>({
-    [OrderStatus.PENDENTE]: 0,
-    [OrderStatus.PROCESSANDO]: 0,
-    [OrderStatus.CONFIRMADO]: 0,
-    [OrderStatus.ENVIADO]: 0,
-    [OrderStatus.ENTREGUE]: 0,
-    [OrderStatus.CANCELADO]: 0
+  estatisticas = signal<{ [key in StatusPedido]: number }>({
+    [StatusPedido.PENDENTE]: 0,
+    [StatusPedido.PROCESSANDO]: 0,
+    [StatusPedido.CONFIRMADO]: 0,
+    [StatusPedido.ENVIADO]: 0,
+    [StatusPedido.ENTREGUE]: 0,
+    [StatusPedido.CANCELADO]: 0
   });
 
   constructor(
@@ -45,12 +60,22 @@ export class PedidosList implements OnInit, OnDestroy {
   ngOnInit() {
     this.carregarPedidos();
     this.carregarEstatisticas();
-    this.pollingService.startPolling();
+    // this.pollingService.startPolling();
 
-    // Escutar atualizações do polling
-    this.pollingService.pedidosUpdated.subscribe(() => {
-      this.carregarPedidos();
-      this.carregarEstatisticas();
+    // effect(() => {
+    //   if (this.pollingService.pedidosUpdated()) {
+    //     // this.carregarPedidos();
+    //     this.carregarEstatisticas();
+    //   }
+    // })
+  }
+
+  ngAfterViewInit() {
+    effect(() => {
+      if (this.pollingService.pedidosUpdated()) {
+        this.carregarPedidos();
+        this.carregarEstatisticas();
+      }
     });
   }
 
@@ -64,14 +89,15 @@ export class PedidosList implements OnInit, OnDestroy {
     const filter: PedidoFilter = {
       page: this.currentPage(),
       size: this.pageSize(),
-      status: this.statusFilter() || undefined,
-      dataInicio: this.dataInicio() ? new Date(this.dataInicio()) : undefined,
-      dataFim: this.dataFim() ? new Date(this.dataFim()) : undefined
+      status: this.statusFilter() || undefined
     };
 
     this.pedidoService.listarPedidos(filter).subscribe({
       next: (response: PageResponse<Pedido>) => {
+        console.log(response.content, "Response")
+        console.log(this.pedidos(), "Response")
         this.pedidos.set(response.content);
+        console.log(this.pedidos(), "Response")
         this.totalElements.set(response.totalElements);
         this.totalPages.set(response.totalPages);
         this.loading.hide();
@@ -86,7 +112,19 @@ export class PedidosList implements OnInit, OnDestroy {
   carregarEstatisticas() {
     this.pedidoService.obterEstatisticasPedidos().subscribe({
       next: (stats) => {
-        this.estatisticas.set(stats);
+        const statsObj: Record<StatusPedido, number> = {
+          [StatusPedido.PENDENTE]: 0,
+          [StatusPedido.PROCESSANDO]: 0,
+          [StatusPedido.CONFIRMADO]: 0,
+          [StatusPedido.ENVIADO]: 0,
+          [StatusPedido.ENTREGUE]: 0,
+          [StatusPedido.CANCELADO]: 0
+        };
+        stats.forEach(item => {
+          const key = item.status.toUpperCase() as StatusPedido;
+          statsObj[key] = item.quantidade;
+        });
+        this.estatisticas.set(statsObj);
       },
       error: (error) => {
         console.error('Erro ao carregar estatísticas:', error);
@@ -120,8 +158,8 @@ export class PedidosList implements OnInit, OnDestroy {
     }
   }
 
-  podeCancelar(status: OrderStatus): boolean {
-    return status !== OrderStatus.ENVIADO && status !== OrderStatus.ENTREGUE && status !== OrderStatus.CANCELADO;
+  podeCancelar(status: StatusPedido): boolean {
+    return status !== StatusPedido.ENVIADO && status !== StatusPedido.ENTREGUE && status !== StatusPedido.CANCELADO;
   }
 
   getPages(): number[] {
@@ -139,22 +177,20 @@ export class PedidosList implements OnInit, OnDestroy {
     return pages;
   }
 
-  getStatusOptions(): { value: OrderStatus | '', label: string }[] {
+  getStatusOptions(): { value: StatusPedido | '', label: string }[] {
     return [
       { value: '', label: 'Todos' },
-      { value: OrderStatus.PENDENTE, label: 'Pendente' },
-      { value: OrderStatus.PROCESSANDO, label: 'Processando' },
-      { value: OrderStatus.CONFIRMADO, label: 'Confirmado' },
-      { value: OrderStatus.ENVIADO, label: 'Enviado' },
-      { value: OrderStatus.ENTREGUE, label: 'Entregue' },
-      { value: OrderStatus.CANCELADO, label: 'Cancelado' }
+      { value: StatusPedido.PENDENTE, label: 'Pendente' },
+      { value: StatusPedido.PROCESSANDO, label: 'Processando' },
+      { value: StatusPedido.CONFIRMADO, label: 'Confirmado' },
+      { value: StatusPedido.ENVIADO, label: 'Enviado' },
+      { value: StatusPedido.ENTREGUE, label: 'Entregue' },
+      { value: StatusPedido.CANCELADO, label: 'Cancelado' }
     ];
   }
 
   limparFiltros() {
     this.statusFilter.set('');
-    this.dataInicio.set('');
-    this.dataFim.set('');
     this.onFilterChange();
   }
 }
