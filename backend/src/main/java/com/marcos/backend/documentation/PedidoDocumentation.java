@@ -1,10 +1,13 @@
 package com.marcos.backend.documentation;
 
+import com.marcos.backend.dto.PageResponse;
 import com.marcos.backend.entity.Pedido;
 import com.marcos.backend.entity.StatusPedido;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -12,7 +15,7 @@ import java.util.List;
 public interface PedidoDocumentation {
 
 	@Operation(summary = "Lista todos os pedidos")
-	List<Pedido> listarPedidos();
+	PageResponse<Pedido> listarPedidos(int page,int size);
 
 	@Operation(summary = "Busca um pedido por ID")
 	Pedido buscarPedido(Integer id);

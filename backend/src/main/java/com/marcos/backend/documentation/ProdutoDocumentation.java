@@ -1,10 +1,13 @@
 package com.marcos.backend.documentation;
 
+import com.marcos.backend.dto.PageResponse;
 import com.marcos.backend.entity.Produto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +16,7 @@ import java.util.List;
 public interface ProdutoDocumentation {
 
 	@Operation(summary = "Listar todos os produtos")
-	public abstract List<Produto> listAll();
+	public abstract PageResponse<Produto> listAll(int page, int size);
 
 	@Operation(summary = "Buscar produto por ID")
 	public abstract Produto findById(Integer id);
