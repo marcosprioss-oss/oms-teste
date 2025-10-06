@@ -1,23 +1,22 @@
 <div class="app-container">
-  <nav class="navbar">
-    <div class="navbar-brand">
-      <h2>Sistema de Pedidos</h2>
-    </div>
+  <mat-toolbar class="navbar">
+    <span class="navbar-brand">Sistema de Pedidos</span>
+    <span class="spacer"></span>
     <div class="navbar-nav">
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
-        <i class="icon-dashboard"></i>
+      <a mat-button routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon>
         Dashboard
       </a>
-      <a routerLink="/produtos" routerLinkActive="active" class="nav-link">
-        <i class="icon-box"></i>
+      <a mat-button routerLink="/produtos" routerLinkActive="active">
+        <mat-icon>inventory</mat-icon>
         Produtos
       </a>
-      <a routerLink="/pedidos" routerLinkActive="active" class="nav-link">
-        <i class="icon-clipboard"></i>
+      <a mat-button routerLink="/pedidos" routerLinkActive="active">
+        <mat-icon>shopping_cart</mat-icon>
         Pedidos
       </a>
     </div>
-  </nav>
+  </mat-toolbar>
 
   <main class="main-content">
     <router-outlet></router-outlet>
