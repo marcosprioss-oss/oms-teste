@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="pedidos")
+@Table(name="pedido")
 public class Pedido {
 
 	@Id
@@ -22,7 +22,7 @@ public class Pedido {
 	@Enumerated(EnumType.STRING)
 	private StatusPedido status;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ItemPedido> items = new ArrayList<>();
 
 	public Double getTotal(){
@@ -31,7 +31,7 @@ public class Pedido {
 	@PrePersist
 	public void prePersist() {
 		if (criacao == null) criacao = LocalDateTime.now();
-		if (status == null) status = StatusPedido.Pendente;
+		if (status == null) status = StatusPedido.PENDENTE;
 	}
 
 	public Integer getId() {

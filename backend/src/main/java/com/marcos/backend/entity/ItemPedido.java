@@ -1,5 +1,6 @@
 package com.marcos.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 
@@ -15,6 +16,10 @@ public class ItemPedido {
 
 	private Integer quantidade;
 
+	@ManyToOne
+	@JoinColumn(name = "pedido_id")
+	@JsonIgnore
+	private Pedido pedido;
 
 	public Integer getId() {
 		return id;
@@ -38,6 +43,14 @@ public class ItemPedido {
 
 	public void setQuantidade(Integer quantidade) {
 		this.quantidade = quantidade;
+	}
+
+	public Pedido getPedido() {
+		return pedido;
+	}
+
+	public void setPedido(Pedido pedido) {
+		this.pedido = pedido;
 	}
 
 	public ItemPedido() {
